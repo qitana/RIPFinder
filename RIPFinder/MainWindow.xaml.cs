@@ -101,6 +101,8 @@ namespace RIPFinder
                     {
                         TextBox_Log.AppendText($"----------------------------------------------------" + "\r\n");
 
+                        TextBox_Log.AppendText($"Module Name: {m.ModuleName}" + "\r\n");
+                        TextBox_Log.AppendText($"File Name: {m.FileName}" + "\r\n");
                         TextBox_Log.AppendText($"Module Size: {moduleMemorySize.ToString("#,0")} Byte" + "\r\n");
                         TextBox_Log.AppendText($"Start Address: {startAddres.ToInt64()}" + "\r\n");
                         TextBox_Log.AppendText($"End Address  : {endAddres.ToInt64()}" + "\r\n");
