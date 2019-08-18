@@ -47,6 +47,7 @@ namespace RIPFinder
             Button_StartScan.IsEnabled = false;
             TextBox_FilterString.IsEnabled = false;
             CheckBox_ExcludeZero.IsEnabled = false;
+            CheckBox_AllModules.IsEnabled = false;
 
             List<string> filters = new List<string>();
             if (!string.IsNullOrWhiteSpace(TextBox_FilterString.Text))
@@ -70,104 +71,138 @@ namespace RIPFinder
             }
 
             bool excludeZero = CheckBox_ExcludeZero.IsChecked ?? false;
+            bool searchFromAllModules = CheckBox_AllModules.IsChecked ?? false;
 
-            int moduleMemorySize = TargetProcess.MainModule.ModuleMemorySize;
-            IntPtr baseAddress = TargetProcess.MainModule.BaseAddress;
+            List<ProcessModule> ProcessModules = new List<ProcessModule>();
 
-            IntPtr startAddres = TargetProcess.MainModule.BaseAddress;
-            IntPtr endAddres = new IntPtr(TargetProcess.MainModule.BaseAddress.ToInt64() + moduleMemorySize);
+            if(searchFromAllModules)
+            {
+                foreach(ProcessModule m in TargetProcess.Modules)
+                {
+                    ProcessModules.Add(m);
+                }
+                
+            }
+            else
+            {
+                ProcessModules.Add(TargetProcess.MainModule);
+            }
 
-            TextBox_Log.AppendText($"Module Size: {moduleMemorySize.ToString("#,0")} Byte" + "\r\n");
-            TextBox_Log.AppendText($"Start Address: {startAddres.ToInt64()}" + "\r\n");
-            TextBox_Log.AppendText($"End Address  : {endAddres.ToInt64()}" + "\r\n");
-            TextBox_Log.AppendText($"Scan started. Please wait..." + "  ");
 
             var task = Task.Run(() =>
             {
-                stopwatch.Start();
-
-                IntPtr currentAddress = startAddres;
-                int bufferSize = 1 * 1024 * 1024;
-                byte[] buffer = new byte[bufferSize];
-
-                while (currentAddress.ToInt64() < endAddres.ToInt64())
+                foreach (var m in ProcessModules)
                 {
+                    int moduleMemorySize = m.ModuleMemorySize;
+                    IntPtr startAddres = m.BaseAddress;
+                    IntPtr endAddres = new IntPtr(m.BaseAddress.ToInt64() + moduleMemorySize);
 
-                    // size
-                    IntPtr nSize = new IntPtr(bufferSize);
-
-                    // if remaining memory size is less than splitSize, change nSize to remaining size
-                    if (IntPtr.Add(currentAddress, bufferSize).ToInt64() > endAddres.ToInt64())
+                    this.Dispatcher.Invoke((Action)(() =>
                     {
-                        nSize = (IntPtr)(endAddres.ToInt64() - currentAddress.ToInt64());
-                    }
+                        TextBox_Log.AppendText($"----------------------------------------------------" + "\r\n");
 
-                    IntPtr numberOfBytesRead = IntPtr.Zero;
-                    if (Helper.ReadProcessMemory(TargetProcess.Handle, currentAddress, buffer, nSize, ref numberOfBytesRead))
+                        TextBox_Log.AppendText($"Module Size: {moduleMemorySize.ToString("#,0")} Byte" + "\r\n");
+                        TextBox_Log.AppendText($"Start Address: {startAddres.ToInt64()}" + "\r\n");
+                        TextBox_Log.AppendText($"End Address  : {endAddres.ToInt64()}" + "\r\n");
+                        TextBox_Log.AppendText($"Scan started. Please wait..." + "  ");
+
+                    }));
+
+                    stopwatch.Start();
+
+                    IntPtr currentAddress = startAddres;
+                    int bufferSize = 1 * 1024 * 1024;
+                    byte[] buffer = new byte[bufferSize];
+
+                    while (currentAddress.ToInt64() < endAddres.ToInt64())
                     {
 
-                        for (int i = 0; i < numberOfBytesRead.ToInt64() - 4; i++)
+                        // size
+                        IntPtr nSize = new IntPtr(bufferSize);
+
+                        // if remaining memory size is less than splitSize, change nSize to remaining size
+                        if (IntPtr.Add(currentAddress, bufferSize).ToInt64() > endAddres.ToInt64())
                         {
-                            var entry = new RIPEntry();
-                            entry.Address = new IntPtr(currentAddress.ToInt64() + i);
-                            entry.AddressValueInt64 = BitConverter.ToInt32(buffer, i);
-                            entry.TargetAddress = new IntPtr(entry.Address.ToInt64() + entry.AddressValueInt64 + 4);
+                            nSize = (IntPtr)(endAddres.ToInt64() - currentAddress.ToInt64());
+                        }
 
-                            if (entry.TargetAddress.ToInt64() < startAddres.ToInt64() || entry.TargetAddress.ToInt64() > endAddres.ToInt64())
+                        IntPtr numberOfBytesRead = IntPtr.Zero;
+                        if (Helper.ReadProcessMemory(TargetProcess.Handle, currentAddress, buffer, nSize, ref numberOfBytesRead))
+                        {
+
+                            for (int i = 0; i < numberOfBytesRead.ToInt64() - 4; i++)
                             {
-                                continue;
-                            }
+                                var entry = new RIPEntry();
+                                entry.Address = new IntPtr(currentAddress.ToInt64() + i);
+                                entry.AddressValueInt64 = BitConverter.ToInt32(buffer, i);
+                                entry.TargetAddress = new IntPtr(entry.Address.ToInt64() + entry.AddressValueInt64 + 4);
 
-                            entry.TargetAddressValue = Helper.GetByteArray(TargetProcess, entry.TargetAddress, 8);
-
-                            if (excludeZero)
-                            {
-                                if (entry.TargetAddressValueInt64 == 0)
+                                if (entry.TargetAddress.ToInt64() < startAddres.ToInt64() || entry.TargetAddress.ToInt64() > endAddres.ToInt64())
                                 {
                                     continue;
                                 }
+
+                                entry.TargetAddressValue = Helper.GetByteArray(TargetProcess, entry.TargetAddress, 8);
+
+                                if (excludeZero)
+                                {
+                                    if (entry.TargetAddressValueInt64 == 0)
+                                    {
+                                        continue;
+                                    }
+                                }
+
+                                if (filters.Any() &&
+                                !filters.Any(x => x == entry.TargetAddressValueHexString) &&
+                                !filters.Any(x => x == entry.TargetAddressValueInt64.ToString()) &&
+                                !filters.Any(x => x == entry.TargetAddressValueUInt64.ToString()))
+                                {
+                                    continue;
+                                }
+
+                                entries.Add(entry);
+
                             }
-
-                            if (filters.Any() &&
-                            !filters.Any(x => x == entry.TargetAddressValueHexString) &&
-                            !filters.Any(x => x == entry.TargetAddressValueInt64.ToString()) &&
-                            !filters.Any(x => x == entry.TargetAddressValueUInt64.ToString()))
-                            {
-                                continue;
-                            }
-
-                            entries.Add(entry);
-
+                        }
+                        if ((currentAddress.ToInt64() + numberOfBytesRead.ToInt64()) == endAddres.ToInt64())
+                        {
+                            currentAddress = new IntPtr(currentAddress.ToInt64() + numberOfBytesRead.ToInt64());
+                        }
+                        else
+                        {
+                            currentAddress = new IntPtr(currentAddress.ToInt64() + numberOfBytesRead.ToInt64() - 4);
                         }
                     }
-                    if ((currentAddress.ToInt64() + numberOfBytesRead.ToInt64()) == endAddres.ToInt64())
+
+                    stopwatch.Stop();
+
+                    this.Dispatcher.Invoke((Action)(() =>
                     {
-                        currentAddress = new IntPtr(currentAddress.ToInt64() + numberOfBytesRead.ToInt64());
-                    }
-                    else
-                    {
-                        currentAddress = new IntPtr(currentAddress.ToInt64() + numberOfBytesRead.ToInt64() - 4);
-                    }
+                        DataGrid_RIP.ItemsSource = entries;
+
+                        TextBox_Log.AppendText($"Complete." + "\r\n");
+                        TextBox_Log.AppendText($"Result Count: {entries.Count.ToString("#,0")}" + "\r\n");
+                        TextBox_Log.AppendText($"Scan Time: {stopwatch.ElapsedMilliseconds}ms" + "\r\n");
+                    }));
                 }
 
-                stopwatch.Stop();
             });
 
             await task;
-            DataGrid_RIP.ItemsSource = entries;
-
-            TextBox_Log.AppendText($"Complete." + "\r\n");
-            TextBox_Log.AppendText($"Result Count: {entries.Count.ToString("#,0")}" + "\r\n");
-            TextBox_Log.AppendText($"Scan Time: {stopwatch.ElapsedMilliseconds}ms" + "\r\n");
-            
 
             Button_SelectProcess.IsEnabled = true;
             Button_StartScan.IsEnabled = true;
             TextBox_FilterString.IsEnabled = true;
             CheckBox_ExcludeZero.IsEnabled = true;
+            CheckBox_AllModules.IsEnabled = true;
         }
     }
 
+    public class Module
+    {
+        public IntPtr startAddres { get; set; } = IntPtr.Zero;
+        public IntPtr endAddres { get; set; } = IntPtr.Zero;
+    }
     public class RIPEntry
     {
         public IntPtr Address { get; set; } = IntPtr.Zero;

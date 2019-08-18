@@ -30,6 +30,6 @@
         <Label Content="Filter(Hex):" HorizontalAlignment="Left" Margin="67,50,0,0" VerticalAlignment="Top" Height="26" />
         <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="23" Margin="138,53,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="187"/>
         <CheckBox x:Name="CheckBox_ExcludeZero" Content="Exclude Zero Value" HorizontalAlignment="Left" Margin="342,56,0,0" VerticalAlignment="Top"/>
-
+        <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" HorizontalAlignment="Left" Margin="502,56,0,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>
