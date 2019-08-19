@@ -155,6 +155,7 @@ namespace RIPFinder
                                 }
 
                                 if (filters.Any() &&
+                                !filters.Any(x => x == entry.TargetAddressString) &&
                                 !filters.Any(x => x == entry.TargetAddressValueHexString) &&
                                 !filters.Any(x => x == entry.TargetAddressValueInt64.ToString()) &&
                                 !filters.Any(x => x == entry.TargetAddressValueUInt64.ToString()))
