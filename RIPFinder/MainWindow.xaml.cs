@@ -199,6 +199,20 @@ namespace RIPFinder
             CheckBox_ExcludeZero.IsEnabled = true;
             CheckBox_AllModules.IsEnabled = true;
         }
+
+        private void DataGrid_RIP_CopyAddress(object sender, RoutedEventArgs e)
+        {
+            RIPEntry entry = this.DataGrid_RIP.SelectedItem as RIPEntry;
+            if(entry != null)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(entry.AddressString);
+                }
+                catch
+                { }
+            }
+        }
     }
 
     public class Module

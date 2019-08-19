@@ -16,6 +16,11 @@
         <TextBox x:Name="TextBox_ProcessName" HorizontalAlignment="Left" Height="23" Margin="67,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="187" IsReadOnly="True"/>
         <Button x:Name="Button_SelectProcess" Content="Select Process" HorizontalAlignment="Left" Margin="259,14,0,0" VerticalAlignment="Top" Width="116" Height="23" Click="Button_SelectProcess_Click"/>
         <DataGrid x:Name="DataGrid_RIP" Margin="10,0,10,10" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" FontFamily="Consolas">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="コピー" Click="DataGrid_RIP_CopyAddress" />
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Address" Binding="{Binding AddressString, Mode=OneWay}"/>
                 <DataGridTextColumn Header="AddressValue (Int64)"  Binding="{Binding AddressValueInt64, Mode=OneWay}"/>
