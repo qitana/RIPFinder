@@ -67,6 +67,8 @@ namespace RIPFinder
                 }
             }
 
+            filters = filters.Distinct().ToList();
+
             foreach (var f in filters)
             {
                 TextBox_Log.AppendText($"filter: {f}" + "\r\n");
@@ -105,8 +107,8 @@ namespace RIPFinder
                         TextBox_Log.AppendText($"Module Name: {m.ModuleName}" + "\r\n");
                         TextBox_Log.AppendText($"File Name: {m.FileName}" + "\r\n");
                         TextBox_Log.AppendText($"Module Size: {moduleMemorySize.ToString("#,0")} Byte" + "\r\n");
-                        TextBox_Log.AppendText($"Start Address: {startAddres.ToInt64().ToString("X2")} + ({startAddres.ToInt64()})" + "\r\n");
-                        TextBox_Log.AppendText($"End Address  : {endAddres.ToInt64().ToString("X2")} + ({endAddres.ToInt64()})" + "\r\n");
+                        TextBox_Log.AppendText($"Start Address: {startAddres.ToInt64().ToString("X2")} ({startAddres.ToInt64()})" + "\r\n");
+                        TextBox_Log.AppendText($"End Address  : {endAddres.ToInt64().ToString("X2")} ({endAddres.ToInt64()})" + "\r\n");
                         TextBox_Log.AppendText($"Scan started. Please wait..." + "  ");
 
                     }));
@@ -146,16 +148,32 @@ namespace RIPFinder
                                     continue;
                                 }
 
-                                entry.AddressRelativeString = m.ModuleName + "+0x" + (entry.Address.ToInt64() - startAddres.ToInt64()).ToString("X2");
-                                entry.TargetAddressRelativeString = m.ModuleName + "+0x" + (entry.TargetAddress.ToInt64() - startAddres.ToInt64()).ToString("X2");
+                                var offsetString1 = (entry.Address.ToInt64() - startAddres.ToInt64()).ToString("X");
+                                if (offsetString1.Length % 2 == 1) offsetString1 = "0" + offsetString1;
+                                entry.AddressRelativeString = '"' + m.ModuleName + '"' + "+" + offsetString1;
 
-                                entry.TargetAddressValue = Helper.GetByteArray(TargetProcess, entry.TargetAddress, 8);
+                                var offsetString2 = (entry.TargetAddress.ToInt64() - startAddres.ToInt64()).ToString("X");
+                                if (offsetString2.Length % 2 == 1) offsetString2 = "0" + offsetString2;
+                                entry.TargetAddressRelativeString = '"' + m.ModuleName + '"' + "+" + offsetString2;
 
                                 if (filters.Any() &&
                                 !filters.Any(x => x == entry.TargetAddressString) &&
-                                !filters.Any(x => x == entry.TargetAddressValueHexString))
+                                !filters.Any(x => x == entry.TargetAddressRelativeString))
                                 {
                                     continue;
+                                }
+
+                                // Signature
+                                int bufferSize2 = 32;
+                                byte[] buffer2 = new byte[bufferSize2];
+                                IntPtr nSize2 = new IntPtr(bufferSize2); 
+                                IntPtr numberOfBytesRead2 = IntPtr.Zero;
+                                if (Helper.ReadProcessMemory(TargetProcess.Handle, new IntPtr(entry.Address.ToInt64() - bufferSize2), buffer2, nSize2, ref numberOfBytesRead2))
+                                {
+                                    if(numberOfBytesRead2.ToInt64() == bufferSize2)
+                                    {
+                                        entry.Signature = BitConverter.ToString(buffer2).Replace("-", "");
+                                    }
                                 }
 
                                 entries.Add(entry);
@@ -265,7 +283,6 @@ namespace RIPFinder
 
                         }
 
-
                         currentAddress = new IntPtr(currentAddress.ToInt64() + numberOfBytesRead.ToInt64());
                     }
                     binFs.Close();
@@ -312,10 +329,10 @@ namespace RIPFinder
                         RIPEntry entry = item as RIPEntry;
                         string csv = "";
                         csv += String.Format("{0, -30}", entry.AddressRelativeString) + " ";
-                        csv += String.Format("{0, -20}", entry.AddressString) + " ";
+                        csv += String.Format("{0, -16}", entry.AddressString) + " ";
                         csv += String.Format("{0, -30}", entry.TargetAddressRelativeString) + " ";
-                        csv += String.Format("{0, -20}", entry.TargetAddressString) + " ";
-                        csv += String.Format("{0, 20}", entry.TargetAddressValueHexString) + Environment.NewLine;
+                        csv += String.Format("{0, -16}", entry.TargetAddressString) + " ";
+                        csv += String.Format("{0, -64}", entry.Signature) + Environment.NewLine;
                         sr.Write(csv);
                     }
 
@@ -341,15 +358,16 @@ namespace RIPFinder
     }
     public class RIPEntry
     {
+        public string Signature { get; set; }
+
         public IntPtr Address { get; set; } = IntPtr.Zero;
-        public string AddressString => Address.ToInt64().ToString("X2");
+        public string AddressString => (Address.ToInt64().ToString("X").Length % 2 == 1) ? "0" + Address.ToInt64().ToString("X") : Address.ToInt64().ToString("X");
         public string AddressRelativeString { get; set; }
         public Int64 AddressValueInt64 { get; set; } = 0;
+
         public IntPtr TargetAddress { get; set; } = IntPtr.Zero;
-        public string TargetAddressString => TargetAddress.ToInt64().ToString("X2");
+        public string TargetAddressString => (TargetAddress.ToInt64().ToString("X").Length % 2 == 1) ? "0" + TargetAddress.ToInt64().ToString("X") : TargetAddress.ToInt64().ToString("X");
         public string TargetAddressRelativeString { get; set; }
-        public byte[] TargetAddressValue { get; set; } = null;
-        public string TargetAddressValueHexString => BitConverter.ToString(TargetAddressValue).Replace("-", "");
 
     }
 }
