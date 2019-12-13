@@ -5,16 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RIPFinder"
         mc:Ignorable="d"
-        Title="RIPFinder" Height="450" Width="961.002">
+        Title="RIPFinder" Height="500" Width="930">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="102"/>
+            <RowDefinition Height="115"/>
             <RowDefinition/>
             <RowDefinition Height="126"/>
         </Grid.RowDefinitions>
-        <Label Content="Process:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="26" Width="52"/>
-        <TextBox x:Name="TextBox_ProcessName" HorizontalAlignment="Left" Height="23" Margin="67,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="187" IsReadOnly="True"/>
-        <Button x:Name="Button_SelectProcess" Content="Select Process" HorizontalAlignment="Left" Margin="259,14,0,0" VerticalAlignment="Top" Width="116" Height="23" Click="Button_SelectProcess_Click"/>
+        <Label Content="Process:" HorizontalAlignment="Left" Margin="107,14,0,0" VerticalAlignment="Top" Height="26" Width="55"/>
+        <TextBox x:Name="TextBox_ProcessName" HorizontalAlignment="Left" Height="23" Margin="167,13,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="186" IsReadOnly="True"/>
+        <Button x:Name="Button_SelectProcess" Content="Select Process" HorizontalAlignment="Left" Margin="367,13,0,0" VerticalAlignment="Top" Width="116" Height="23" Click="Button_SelectProcess_Click"/>
         <DataGrid x:Name="DataGrid_RIP" Margin="10,0,10,10" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" FontFamily="Consolas">
             <DataGrid.ContextMenu>
                 <ContextMenu>
@@ -22,19 +22,19 @@
                 </ContextMenu>
             </DataGrid.ContextMenu>
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Address" Binding="{Binding AddressString, Mode=OneWay}"/>
-                <DataGridTextColumn Header="AddressValue (Int64)"  Binding="{Binding AddressValueInt64, Mode=OneWay}"/>
-                <DataGridTextColumn Header="TargetAddress" Binding="{Binding TargetAddressString, Mode=OneWay}"/>
-                <DataGridTextColumn Header="TargetAddressValue (Hex)" Binding="{Binding TargetAddressValueHexString, Mode=OneWay}"/>
-                <DataGridTextColumn Header="TargetAddressValue (Int64)" Binding="{Binding TargetAddressValueInt64, Mode=OneWay}"/>
-                <DataGridTextColumn Header="TargetAddressValue (UInt64)" Binding="{Binding TargetAddressValueUInt64, Mode=OneWay}"/>
+                <DataGridTextColumn Header="BASE: Address (Relative)" Binding="{Binding AddressRelativeString, Mode=OneWay}"/>
+                <DataGridTextColumn Header="BASE: Address (Absolute)" Binding="{Binding AddressString, Mode=OneWay}"/>
+                <DataGridTextColumn Header="Target: Address (Relative)" Binding="{Binding TargetAddressRelativeString, Mode=OneWay}"/>
+                <DataGridTextColumn Header="Target: Address (Absolute)" Binding="{Binding TargetAddressString, Mode=OneWay}"/>
+                <DataGridTextColumn Header="Target: Value (Hex)" Binding="{Binding TargetAddressValueHexString, Mode=OneWay}"/>
             </DataGrid.Columns>
         </DataGrid>
         <TextBox x:Name="TextBox_Log" Margin="10,0,10,10" TextWrapping="Wrap" Text="TextBox" Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
-        <Button x:Name="Button_StartScan" Content="Start Scan" HorizontalAlignment="Right" Margin="0,14,10,0" VerticalAlignment="Top" Width="98" Height="23" Click="Button_StartScan_Click"/>
-        <Label Content="Filter(Hex):" HorizontalAlignment="Left" Margin="67,50,0,0" VerticalAlignment="Top" Height="26" />
-        <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="23" Margin="138,53,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="187"/>
-        <CheckBox x:Name="CheckBox_ExcludeZero" Content="Exclude Zero Value" HorizontalAlignment="Left" Margin="342,56,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" HorizontalAlignment="Left" Margin="502,56,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="Button_StartScan" Content="Start Scan" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top" Width="98" Height="23" Click="Button_StartScan_Click"/>
+        <Label Content="Target Address Filter (Hex):" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Height="26" Width="152" />
+        <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="23" Margin="167,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="186"/>
+        <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" HorizontalAlignment="Left" Margin="367,51,0,0" VerticalAlignment="Top" Height="15" Width="151"/>
+        <Button x:Name="Button_SaveDump" Content="Save Main Process Dump" Margin="0,13,19,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="162" Height="23" Click="Button_SaveDump_Click"/>
+        <Button x:Name="Button_ExportResults" Content="Export Results" Margin="0,82,19,0" HorizontalAlignment="Right" Width="162" Height="23" VerticalAlignment="Top" Click="Button_ExportResults_Click"/>
     </Grid>
 </Window>
