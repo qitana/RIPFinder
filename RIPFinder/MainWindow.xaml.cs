@@ -181,7 +181,7 @@ namespace RIPFinder
                                 }
 
                                 // Signature
-                                int bufferSize2 = 32;
+                                int bufferSize2 = 64;
                                 byte[] buffer2 = new byte[bufferSize2];
                                 IntPtr nSize2 = new IntPtr(bufferSize2);
                                 IntPtr numberOfBytesRead2 = IntPtr.Zero;
