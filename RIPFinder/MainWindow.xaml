@@ -8,33 +8,57 @@
         Title="RIPFinder" Height="500" Width="930">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="115"/>
-            <RowDefinition/>
-            <RowDefinition Height="126"/>
+            <RowDefinition Height="43"/>
+            <RowDefinition Height="426"/>
         </Grid.RowDefinitions>
-        <Label Content="Process:" HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" Height="26" Width="133" HorizontalContentAlignment="Right"/>
-        <TextBox x:Name="TextBox_ProcessName" HorizontalAlignment="Left" Height="23" Margin="148,14,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="186" IsReadOnly="True"/>
-        <Button x:Name="Button_SelectProcess" Content="Select Process" HorizontalAlignment="Left" Margin="348,14,0,0" VerticalAlignment="Top" Width="116" Height="23" Click="Button_SelectProcess_Click"/>
-        <DataGrid x:Name="DataGrid_RIP" Margin="10,0,10,10" Grid.Row="1" AutoGenerateColumns="False" CanUserAddRows="False" FontFamily="Consolas">
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="コピー" Click="DataGrid_RIP_CopyAddress" />
-                </ContextMenu>
-            </DataGrid.ContextMenu>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="BASE: Address (Relative)" Binding="{Binding AddressRelativeString, Mode=OneWay}"/>
-                <DataGridTextColumn Header="BASE: Address" Binding="{Binding AddressString, Mode=OneWay}"/>
-                <DataGridTextColumn Header="Target: Address (Relative)" Binding="{Binding TargetAddressRelativeString, Mode=OneWay}"/>
-                <DataGridTextColumn Header="Target: Address" Binding="{Binding TargetAddressString, Mode=OneWay}"/>
-                <DataGridTextColumn Header="Signature" Binding="{Binding Signature, Mode=OneWay}"/>
-            </DataGrid.Columns>
-        </DataGrid>
-        <TextBox x:Name="TextBox_Log" Margin="10,0,10,10" TextWrapping="Wrap" Text="TextBox" Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"/>
-        <Button x:Name="Button_StartScan" Content="Start Scan" HorizontalAlignment="Left" Margin="10,82,0,0" VerticalAlignment="Top" Width="98" Height="23" Click="Button_StartScan_Click"/>
-        <Label Content="Target Address Filter:" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Height="26" Width="133" HorizontalContentAlignment="Right" />
-        <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="23" Margin="148,45,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="186"/>
-        <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" HorizontalAlignment="Left" Margin="348,51,0,0" VerticalAlignment="Top" Height="15" Width="151"/>
-        <Button x:Name="Button_SaveDump" Content="Save Main Process Dump" Margin="0,13,19,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="162" Height="23" Click="Button_SaveDump_Click"/>
-        <Button x:Name="Button_ExportResults" Content="Export Results" Margin="0,82,19,0" HorizontalAlignment="Right" Width="162" Height="23" VerticalAlignment="Top" Click="Button_ExportResults_Click"/>
+        <Label Content="Process:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="26" Width="60"/>
+        <TextBox x:Name="TextBox_ProcessName" HorizontalAlignment="Left" Height="23" Margin="70,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True"/>
+        <Button x:Name="Button_SelectProcess" Content="Select Process" HorizontalAlignment="Left" Margin="280,10,0,0" VerticalAlignment="Top" Width="107" Height="23" Click="Button_SelectProcess_Click"/>
+        <Button x:Name="Button_SaveDump" Content="Save Main Process Dump" Margin="0,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="162" Height="23" Click="Button_SaveDump_Click"/>
+        <TabControl Margin="10,0,10,10" Grid.Row="1">
+            <TabItem Header="Signature Search">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="105"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="126"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Target Filter:" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Height="26" Width="79" />
+                    <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="58" Margin="84,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="624"/>
+                    <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" Margin="557,78,188,0" VerticalAlignment="Top" Height="15"/>
+                    <Button x:Name="Button_ExportResults" Content="Export Results" Margin="0,73,10,0" HorizontalAlignment="Right" Width="125" Height="23" VerticalAlignment="Top" Click="Button_ExportResults_Click"/>
+                    <Button x:Name="Button_StartScan" Content="Start Scan" HorizontalAlignment="Left" Margin="84,73,0,0" VerticalAlignment="Top" Width="98" Height="23" Click="Button_StartScan_Click"/>
+                    <DataGrid x:Name="DataGrid_RIP" Margin="10,0,10,10" AutoGenerateColumns="False" CanUserAddRows="False" FontFamily="Consolas" Grid.Row="1">
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="コピー" Click="DataGrid_RIP_CopyAddress" />
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="BASE: Address (Relative)" Binding="{Binding AddressRelativeString, Mode=OneWay}"/>
+                            <DataGridTextColumn Header="BASE: Address" Binding="{Binding AddressString, Mode=OneWay}"/>
+                            <DataGridTextColumn Header="Target: Address (Relative)" Binding="{Binding TargetAddressRelativeString, Mode=OneWay}"/>
+                            <DataGridTextColumn Header="Target: Address" Binding="{Binding TargetAddressString, Mode=OneWay}"/>
+                            <DataGridTextColumn Header="Signature" Binding="{Binding Signature, Mode=OneWay}"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBox x:Name="TextBox_Log" Margin="10,0,10,10" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="2"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Signature Scan">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="41*"/>
+                        <RowDefinition Height="153*"/>
+                    </Grid.RowDefinitions>
+                    <Label Content="Signature:" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="70"/>
+                    <TextBox x:Name="TextBox_Signature" Height="23" Margin="75,14,122,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <Button x:Name="Button_SignatureScan" Content="Scan" Margin="806,14,10,0" VerticalAlignment="Top" Height="23" Click="Button_SignatureScan_Click"/>
+                    <Label Content="Offset:" HorizontalAlignment="Left" Margin="5,42,0,0" VerticalAlignment="Top" Width="60"/>
+                    <TextBox x:Name="TextBox_Offset1" HorizontalAlignment="Left" Height="23" Margin="75,46,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="60"/>
+                    <TextBox x:Name="TextBox_LogScan" Margin="10,0,10,10" Grid.Row="1" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+                </Grid>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

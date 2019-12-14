@@ -20,6 +20,22 @@ namespace RIPFinder
             InitializeComponent();
         }
 
+        private void SetUI(bool isEnabled)
+        {
+            Button_SelectProcess.IsEnabled = isEnabled;
+            Button_StartScan.IsEnabled = isEnabled;
+            TextBox_FilterString.IsEnabled = isEnabled;
+            CheckBox_AllModules.IsEnabled = isEnabled;
+            Button_SaveDump.IsEnabled = isEnabled;
+            Button_ExportResults.IsEnabled = isEnabled;
+            TextBox_Signature.IsEnabled = isEnabled;
+            TextBox_Offset1.IsEnabled = isEnabled;
+            TextBox_LogScan.IsEnabled = isEnabled;
+            Button_SignatureScan.IsEnabled = isEnabled;
+            
+        }
+
+
         private void Button_SelectProcess_Click(object sender, RoutedEventArgs e)
         {
             ProcessSelection processSelection = new ProcessSelection();
@@ -44,26 +60,27 @@ namespace RIPFinder
             Stopwatch stopwatch = new Stopwatch();
             TextBox_Log.Clear();
 
-            Button_SelectProcess.IsEnabled = false;
-            Button_StartScan.IsEnabled = false;
-            TextBox_FilterString.IsEnabled = false;
-            CheckBox_AllModules.IsEnabled = false;
-            Button_SaveDump.IsEnabled = false;
-            Button_ExportResults.IsEnabled = false;
+            SetUI(false);
 
             List<string> filters = new List<string>();
             if (!string.IsNullOrWhiteSpace(TextBox_FilterString.Text))
             {
-                filters.Add(TextBox_FilterString.Text);
-                filters.Add(TextBox_FilterString.Text.PadLeft(16, '0'));
+                var filterStrings = TextBox_FilterString.Text.Split(',');
+                foreach (var filterString in filterStrings)
+                {
+                    var str = filterString.Trim();
+                    filters.Add(str);
 
-                if (Int64.TryParse(TextBox_FilterString.Text, out Int64 out1))
-                {
-                    filters.Add(out1.ToString());
-                }
-                if (Int64.TryParse(TextBox_FilterString.Text, NumberStyles.HexNumber, new CultureInfo("en-US"), out Int64 out2))
-                {
-                    filters.Add(out2.ToString());
+                    if (Int64.TryParse(str, out Int64 out1))
+                    {
+                        filters.Add(out1.ToString("X"));
+                    }
+
+                    if (Int64.TryParse(str, NumberStyles.HexNumber, new CultureInfo("en-US"), out Int64 out2))
+                    {
+                        filters.Add(out2.ToString("X"));
+                        filters.Add(out2.ToString("X").PadLeft(16, '0'));
+                    }
                 }
             }
 
@@ -166,11 +183,11 @@ namespace RIPFinder
                                 // Signature
                                 int bufferSize2 = 32;
                                 byte[] buffer2 = new byte[bufferSize2];
-                                IntPtr nSize2 = new IntPtr(bufferSize2); 
+                                IntPtr nSize2 = new IntPtr(bufferSize2);
                                 IntPtr numberOfBytesRead2 = IntPtr.Zero;
                                 if (Helper.ReadProcessMemory(TargetProcess.Handle, new IntPtr(entry.Address.ToInt64() - bufferSize2), buffer2, nSize2, ref numberOfBytesRead2))
                                 {
-                                    if(numberOfBytesRead2.ToInt64() == bufferSize2)
+                                    if (numberOfBytesRead2.ToInt64() == bufferSize2)
                                     {
                                         entry.Signature = BitConverter.ToString(buffer2).Replace("-", "");
                                     }
@@ -206,12 +223,7 @@ namespace RIPFinder
 
             await task;
 
-            Button_SelectProcess.IsEnabled = true;
-            Button_StartScan.IsEnabled = true;
-            TextBox_FilterString.IsEnabled = true;
-            CheckBox_AllModules.IsEnabled = true;
-            Button_SaveDump.IsEnabled = true;
-            Button_ExportResults.IsEnabled = true;
+            SetUI(true);
         }
 
         private void DataGrid_RIP_CopyAddress(object sender, RoutedEventArgs e)
@@ -236,12 +248,7 @@ namespace RIPFinder
             dialog.Filter = "binary file (*.bin)|*.bin|all files (*.*)|*.*";
             if (dialog.ShowDialog() == true)
             {
-                Button_SelectProcess.IsEnabled = false;
-                Button_StartScan.IsEnabled = false;
-                TextBox_FilterString.IsEnabled = false;
-                CheckBox_AllModules.IsEnabled = false;
-                Button_SaveDump.IsEnabled = false;
-                Button_ExportResults.IsEnabled = false;
+                SetUI(false);
 
                 var task = Task.Run(() =>
                 {
@@ -290,16 +297,9 @@ namespace RIPFinder
                 });
 
                 await task;
-
                 MessageBox.Show("Complete.");
 
-                Button_SelectProcess.IsEnabled = true;
-                Button_StartScan.IsEnabled = true;
-                TextBox_FilterString.IsEnabled = true;
-                CheckBox_AllModules.IsEnabled = true;
-                Button_SaveDump.IsEnabled = true;
-                Button_ExportResults.IsEnabled = true;
-
+                SetUI(true);
             }
         }
 
@@ -312,12 +312,7 @@ namespace RIPFinder
             dialog.Filter = "txt file (*.txt)|*.txt|all files (*.*)|*.*";
             if (dialog.ShowDialog() == true)
             {
-                Button_SelectProcess.IsEnabled = false;
-                Button_StartScan.IsEnabled = false;
-                TextBox_FilterString.IsEnabled = false;
-                CheckBox_AllModules.IsEnabled = false;
-                Button_SaveDump.IsEnabled = false;
-                Button_ExportResults.IsEnabled = false;
+                SetUI(false);
 
                 var task = Task.Run(() =>
                 {
@@ -341,13 +336,68 @@ namespace RIPFinder
 
                 await task;
                 MessageBox.Show("Complete.");
-                Button_SelectProcess.IsEnabled = true;
-                Button_StartScan.IsEnabled = true;
-                TextBox_FilterString.IsEnabled = true;
-                CheckBox_AllModules.IsEnabled = true;
-                Button_SaveDump.IsEnabled = true;
-                Button_ExportResults.IsEnabled = true;
+                SetUI(true);
             }
+        }
+
+        private async void Button_SignatureScan_Click(object sender, RoutedEventArgs e)
+        {
+            if (TargetProcess == null) return;
+            if (TargetProcess.HasExited) return;
+            if (string.IsNullOrEmpty(TextBox_Signature.Text)) return;
+
+
+            SetUI(false);
+            TextBox_LogScan.Clear();
+
+            if (int.TryParse(TextBox_Offset1.Text, out int offset1) == false)
+            {
+                offset1 = 0;
+            }
+
+            var module = TargetProcess.MainModule;
+            var baseAddress = TargetProcess.MainModule.BaseAddress;
+            var endAddress = new IntPtr(TargetProcess.MainModule.BaseAddress.ToInt64() + TargetProcess.MainModule.ModuleMemorySize);
+
+
+
+            Memory memory = new Memory(TargetProcess);
+            var pointers = memory.SigScan(TextBox_Signature.Text, offset1, true);
+
+
+            TextBox_LogScan.Text += "FileName= " + TargetProcess.MainModule.FileName + Environment.NewLine;
+            TextBox_LogScan.Text += "MainModule= " + TargetProcess.MainModule.ModuleName + Environment.NewLine;
+            TextBox_LogScan.Text += "BaseAddress= " + ((baseAddress.ToInt64().ToString("X").Length % 2 == 1) ? "0" + baseAddress.ToInt64().ToString("X") : baseAddress.ToInt64().ToString("X")) + Environment.NewLine;
+            TextBox_LogScan.Text += "ModuleMemorySize= " + TargetProcess.MainModule.ModuleMemorySize.ToString() + Environment.NewLine;
+
+            TextBox_LogScan.Text += "Signature= " + TextBox_Signature.Text + Environment.NewLine;
+            TextBox_LogScan.Text += "Offset= " + TextBox_Signature.Text + Environment.NewLine;
+            TextBox_LogScan.Text += "pointes.Count()= " + pointers.Count() + Environment.NewLine;
+            TextBox_LogScan.Text += "Scan started. Please wait..." + Environment.NewLine;
+            TextBox_LogScan.Text += "==================" + Environment.NewLine;
+
+            string pString = "";
+            var task = Task.Run(() =>
+            {
+                foreach (var p in pointers)
+                {
+                    if (p.ToInt64() >= baseAddress.ToInt64() && p.ToInt64() <= endAddress.ToInt64())
+                    {
+                        var r = p.ToInt64() - baseAddress.ToInt64();
+                        pString += "p: \"" + TargetProcess.MainModule.ModuleName + "\"+" +
+                            ((r.ToString("X").Length % 2 == 1) ? "0" + r.ToString("X") : r.ToString("X")) + " (" +
+                            ((p.ToInt64().ToString("X").Length % 2 == 1) ? "0" + p.ToInt64().ToString("X") : p.ToInt64().ToString("X")) + ")" + Environment.NewLine;
+                    }
+                    else
+                    {
+                        pString += "p: " + ((p.ToInt64().ToString("X").Length % 2 == 1) ? "0" + p.ToInt64().ToString("X") : p.ToInt64().ToString("X")) + Environment.NewLine;
+                    }
+                }
+            });
+            await task;
+            TextBox_LogScan.Text += pString;
+            SetUI(true);
+
         }
     }
 
