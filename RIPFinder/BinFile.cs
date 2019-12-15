@@ -20,9 +20,9 @@ namespace RIPFinder
         }
 
 
-        public List<IntPtr> SigScan(string pattern, int offset, bool rip_addressing)
+        public List<IntPtr[]> SigScan(string pattern, int offset, bool rip_addressing)
         {
-            List<IntPtr> matches_list = new List<IntPtr>();
+            List<IntPtr[]> matches_list = new List<IntPtr[]>();
 
             if (pattern == null || pattern.Length % 2 != 0)
             {
@@ -106,7 +106,7 @@ namespace RIPFinder
                                 // In normal addressing, the 64bits found with the pattern are the absolute pointer.
                                 pointer = new IntPtr(BitConverter.ToInt64(read_buffer, search_offset + pattern_array.Length + offset));
                             }
-                            matches_list.Add(pointer);
+                            matches_list.Add(new IntPtr[2] { new IntPtr(read_start_addr + search_offset + pattern_array.Length), pointer });
 
                         }
                     }

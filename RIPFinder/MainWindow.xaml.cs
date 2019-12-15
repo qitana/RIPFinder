@@ -563,7 +563,7 @@ namespace RIPFinder
                 var endAddress = new IntPtr(TargetProcess.MainModule.BaseAddress.ToInt64() + TargetProcess.MainModule.ModuleMemorySize);
 
                 Memory memory = new Memory(TargetProcess);
-                var pointers = memory.SigScan(TextBox_Signature.Text, offset1, true);
+                var pointers = memory.SigScan(TextBox_Signature.Text.Replace('*','?'), offset1, true);
 
 
                 TextBox_LogScan.Text += "FileName= " + TargetProcess.MainModule.FileName + Environment.NewLine;
@@ -582,16 +582,21 @@ namespace RIPFinder
                 {
                     foreach (var p in pointers)
                     {
-                        if (p.ToInt64() >= baseAddress.ToInt64() && p.ToInt64() <= endAddress.ToInt64())
+                        var r0 = p[0].ToInt64() - baseAddress.ToInt64();
+                        pString += "p: \"" + TargetProcess.MainModule.ModuleName + "\"+" +
+                            ((r0.ToString("X").Length % 2 == 1) ? "0" + r0.ToString("X") : r0.ToString("X")) + " (" +
+                            ((p[1].ToInt64().ToString("X").Length % 2 == 1) ? "0" + p[1].ToInt64().ToString("X") : p[1].ToInt64().ToString("X")) + ")";
+
+                        if (p[1].ToInt64() >= baseAddress.ToInt64() && p[1].ToInt64() <= endAddress.ToInt64())
                         {
-                            var r = p.ToInt64() - baseAddress.ToInt64();
-                            pString += "p: \"" + TargetProcess.MainModule.ModuleName + "\"+" +
-                                ((r.ToString("X").Length % 2 == 1) ? "0" + r.ToString("X") : r.ToString("X")) + " (" +
-                                ((p.ToInt64().ToString("X").Length % 2 == 1) ? "0" + p.ToInt64().ToString("X") : p.ToInt64().ToString("X")) + ")" + Environment.NewLine;
+                            var r1 = p[1].ToInt64() - baseAddress.ToInt64();
+                            pString += " -> \"" + TargetProcess.MainModule.ModuleName + "\"+" +
+                                ((r1.ToString("X").Length % 2 == 1) ? "0" + r1.ToString("X") : r1.ToString("X")) + " (" +
+                                ((p[1].ToInt64().ToString("X").Length % 2 == 1) ? "0" + p[1].ToInt64().ToString("X") : p[1].ToInt64().ToString("X")) + ")" + Environment.NewLine;
                         }
                         else
                         {
-                            pString += "p: " + ((p.ToInt64().ToString("X").Length % 2 == 1) ? "0" + p.ToInt64().ToString("X") : p.ToInt64().ToString("X")) + Environment.NewLine;
+                            pString += " -> " + ((p[1].ToInt64().ToString("X").Length % 2 == 1) ? "0" + p[1].ToInt64().ToString("X") : p[1].ToInt64().ToString("X")) + Environment.NewLine;
                         }
                     }
                 });
@@ -615,22 +620,24 @@ namespace RIPFinder
                 BinFile binFile = new BinFile(BinFileName);
                 string fName = System.IO.Path.GetFileName(BinFileName);
                 long fSize = new System.IO.FileInfo(BinFileName).Length;
-                var pointers = binFile.SigScan(TextBox_Signature.Text, offset1, true);
+                var pointers = binFile.SigScan(TextBox_Signature.Text.Replace('*', '?'), offset1, true);
                 Console.WriteLine(pointers.Count());
                 string pString = "";
                 var task = Task.Run(() =>
                 {
                     foreach (var p in pointers)
                     {
-                        if (p.ToInt64() >= 0 && p.ToInt64() <= fSize)
+                        var r0 = p[0].ToInt64();
+                        pString += "p: \"" + fName + "\"+" + ((r0.ToString("X").Length % 2 == 1) ? "0" + r0.ToString("X") : r0.ToString("X"));
+
+                        if (p[1].ToInt64() >= 0 && p[1].ToInt64() <= fSize)
                         {
-                            var r = p.ToInt64();
-                            Console.WriteLine(r);
-                            pString += "p: \"" + fName + "\"+" + ((r.ToString("X").Length % 2 == 1) ? "0" + r.ToString("X") : r.ToString("X")) + Environment.NewLine;
+                            var r1 = p[1].ToInt64();
+                            pString += " -> \"" + fName + "\"+" + ((r1.ToString("X").Length % 2 == 1) ? "0" + r1.ToString("X") : r1.ToString("X")) + Environment.NewLine;
                         }
                         else
                         {
-                            pString += "p: " + ((p.ToInt64().ToString("X").Length % 2 == 1) ? "0" + p.ToInt64().ToString("X") : p.ToInt64().ToString("X")) + Environment.NewLine;
+                            pString += " -> " + ((p[1].ToInt64().ToString("X").Length % 2 == 1) ? "0" + p[1].ToInt64().ToString("X") : p[1].ToInt64().ToString("X")) + Environment.NewLine;
                         }
                     }
                 });
