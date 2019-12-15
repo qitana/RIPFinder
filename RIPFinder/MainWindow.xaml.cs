@@ -362,7 +362,21 @@ namespace RIPFinder
             return filters;
         }
 
-        private void DataGrid_RIP_CopyAddress(object sender, RoutedEventArgs e)
+        
+        private void DataGrid_RIP_CopyBaseRelativeAddressString(object sender, RoutedEventArgs e)
+        {
+            RIPEntry entry = this.DataGrid_RIP.SelectedItem as RIPEntry;
+            if (entry != null)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(entry.AddressRelativeString);
+                }
+                catch
+                { }
+            }
+        }
+        private void DataGrid_RIP_CopyBaseAddressString(object sender, RoutedEventArgs e)
         {
             RIPEntry entry = this.DataGrid_RIP.SelectedItem as RIPEntry;
             if (entry != null)
@@ -375,6 +389,46 @@ namespace RIPFinder
                 { }
             }
         }
+        private void DataGrid_RIP_CopyTargetRelativeAddressString(object sender, RoutedEventArgs e)
+        {
+            RIPEntry entry = this.DataGrid_RIP.SelectedItem as RIPEntry;
+            if (entry != null)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(entry.TargetAddressRelativeString);
+                }
+                catch
+                { }
+            }
+        }
+        private void DataGrid_RIP_CopyTargetAddressString(object sender, RoutedEventArgs e)
+        {
+            RIPEntry entry = this.DataGrid_RIP.SelectedItem as RIPEntry;
+            if (entry != null)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(entry.TargetAddressString);
+                }
+                catch
+                { }
+            }
+        }
+        private void DataGrid_RIP_CopySignature(object sender, RoutedEventArgs e)
+        {
+            RIPEntry entry = this.DataGrid_RIP.SelectedItem as RIPEntry;
+            if (entry != null)
+            {
+                try
+                {
+                    Clipboard.SetDataObject(entry.Signature);
+                }
+                catch
+                { }
+            }
+        }
+
 
         private void Button_SelectBinFile_Click(object sender, RoutedEventArgs e)
         {

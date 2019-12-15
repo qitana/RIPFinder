@@ -30,7 +30,11 @@
                     <DataGrid x:Name="DataGrid_RIP" Margin="10,0,10,10" AutoGenerateColumns="False" CanUserAddRows="False" FontFamily="Consolas" Grid.Row="1">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
-                                <MenuItem Header="コピー" Click="DataGrid_RIP_CopyAddress" />
+                                <MenuItem Header="Copy Base Address Relative" Click="DataGrid_RIP_CopyBaseRelativeAddressString" />
+                                <MenuItem Header="Copy Base Address" Click="DataGrid_RIP_CopyBaseAddressString" />
+                                <MenuItem Header="Copy Target Address Relative" Click="DataGrid_RIP_CopyTargetRelativeAddressString" />
+                                <MenuItem Header="Copy Target Address" Click="DataGrid_RIP_CopyTargetAddressString" />
+                                <MenuItem Header="Copy Signature" Click="DataGrid_RIP_CopySignature" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>
