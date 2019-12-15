@@ -8,14 +8,13 @@
         Title="RIPFinder" Height="500" Width="930">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="43"/>
-            <RowDefinition Height="426"/>
+            <RowDefinition Height="78"/>
+            <RowDefinition Height="391"/>
         </Grid.RowDefinitions>
-        <Label Content="Process:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="26" Width="60"/>
-        <TextBox x:Name="TextBox_ProcessName" HorizontalAlignment="Left" Height="23" Margin="70,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True"/>
-        <Button x:Name="Button_SelectProcess" Content="Select Process" HorizontalAlignment="Left" Margin="280,10,0,0" VerticalAlignment="Top" Width="107" Height="23" Click="Button_SelectProcess_Click"/>
-        <Button x:Name="Button_SaveDump" Content="Save Main Process Dump" Margin="0,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="162" Height="23" Click="Button_SaveDump_Click"/>
-        <TabControl Margin="10,0,10,10" Grid.Row="1">
+        <TextBox x:Name="TextBox_ProcessName" HorizontalAlignment="Left" Height="23" Margin="85,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="True" TextChanged="TextBox_ProcessName_TextChanged" />
+        <Button x:Name="Button_SelectProcess" Content="Select Process" HorizontalAlignment="Left" Margin="301,10,0,0" VerticalAlignment="Top" Width="107" Height="23" Click="Button_SelectProcess_Click" IsEnabled="False"/>
+        <Button x:Name="Button_SaveDump" Content="Save Main Process Dump" Margin="0,10,10,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="162" Height="23" Click="Button_SaveDump_Click" IsEnabled="False"/>
+        <TabControl x:Name="TabControl_Signatures" Margin="10,0,10,10" Grid.Row="1" IsEnabled="False">
             <TabItem Header="Signature Search">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -60,5 +59,9 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        <RadioButton x:Name="RadioButton_Group1_Process" GroupName="group1" Content="Process" HorizontalAlignment="Left" Margin="10,15,0,0" VerticalAlignment="Top" Checked="RadioButton_Group1_Checked"/>
+        <RadioButton x:Name="RadioButton_Group1_File" GroupName="group1" Content="File" HorizontalAlignment="Left" Margin="10,46,0,0" VerticalAlignment="Top" Checked="RadioButton_Group1_Checked" Width="59"/>
+        <TextBox x:Name="TextBox_BinFileName" HorizontalAlignment="Left" Height="23" Margin="85,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="200" IsReadOnly="true" TextChanged="TextBox_BinFileName_TextChanged" />
+        <Button x:Name="Button_SelectBinFile" Content="Select Bin File" HorizontalAlignment="Left" Margin="301,41,0,0" VerticalAlignment="Top" Width="107" Height="23" IsEnabled="False" Click="Button_SelectBinFile_Click" />
     </Grid>
 </Window>
