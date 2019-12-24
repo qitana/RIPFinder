@@ -8,16 +8,16 @@ namespace RIPFinder
 {
     public class Memory
     {
-        [DllImport("kernel32.dll")]
-        public static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, IntPtr nSize, ref IntPtr lpNumberOfBytesRead);
 
-        public delegate void ProcessChange(Process process);
+        //public delegate void ProcessChange(Process process);
 
         private Process process;
+        private IntPtr processHandle;
 
         public Memory(Process process)
         {
             this.process = process;
+            this.processHandle = Helper.OpenProcess((int)Helper.ProcessAccessFlags.PROCESS_VM_READ, false, process.Id);
         }
 
         public bool IsValid()
@@ -80,7 +80,7 @@ namespace RIPFinder
         {
             IntPtr zero = IntPtr.Zero;
             IntPtr nSize = new IntPtr(buffer.Length);
-            return ReadProcessMemory(process.Handle, address, buffer, nSize, ref zero);
+            return Helper.ReadProcessMemory(processHandle, address, buffer, nSize, ref zero);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace RIPFinder
             int buffer_len = 1 * count;
             var buffer = new byte[buffer_len];
             var bytes_read = IntPtr.Zero;
-            bool ok = ReadProcessMemory(process.Handle, addr, buffer, new IntPtr(buffer_len), ref bytes_read);
+            bool ok = Helper.ReadProcessMemory(processHandle, addr, buffer, new IntPtr(buffer_len), ref bytes_read);
             if (!ok || bytes_read.ToInt32() != buffer_len)
                 return null;
             return buffer;
@@ -249,7 +249,7 @@ namespace RIPFinder
                 IntPtr read_size = (IntPtr)Math.Min(bytes_left, kMaxReadSize);
 
                 IntPtr num_bytes_read = IntPtr.Zero;
-                if (ReadProcessMemory(process.Handle, read_start_addr, read_buffer, read_size, ref num_bytes_read))
+                if (Helper.ReadProcessMemory(processHandle, read_start_addr, read_buffer, read_size, ref num_bytes_read))
                 {
                     int max_search_offset = num_bytes_read.ToInt32() - pattern_array.Length - Math.Max(0, offset);
                     // With RIP we will read a 4byte pointer at the |offset|, else we read an 8byte pointer. Either

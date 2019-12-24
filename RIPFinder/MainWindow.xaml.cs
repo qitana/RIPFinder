@@ -16,6 +16,7 @@ namespace RIPFinder
     public partial class MainWindow : Window
     {
         Process TargetProcess { get; set; }
+        IntPtr TargetProcessHandle { get; set; }
         string BinFileName { get; set; }
 
         List<RIPEntry> entries = new List<RIPEntry>();
@@ -35,6 +36,7 @@ namespace RIPFinder
                 if (processSelection.SelectedProcess != null)
                 {
                     TargetProcess = processSelection.SelectedProcess;
+                    TargetProcessHandle = Helper.OpenProcess((int)Helper.ProcessAccessFlags.PROCESS_VM_READ, false, TargetProcess.Id);
                     TextBox_ProcessName.Text = processSelection.SelectedProcess.ProcessName;
                     DataGrid_RIP.ItemsSource = null;
                     TextBox_Log.Clear();
@@ -131,7 +133,7 @@ namespace RIPFinder
                             }
 
                             IntPtr numberOfBytesRead = IntPtr.Zero;
-                            if (Helper.ReadProcessMemory(TargetProcess.Handle, currentAddress, buffer, nSize, ref numberOfBytesRead))
+                            if (Helper.ReadProcessMemory(TargetProcessHandle, currentAddress, buffer, nSize, ref numberOfBytesRead))
                             {
 
                                 for (int i = 0; i < numberOfBytesRead.ToInt64() - 4; i++)
@@ -167,7 +169,7 @@ namespace RIPFinder
                                     byte[] buffer2 = new byte[bufferSize2];
                                     IntPtr nSize2 = new IntPtr(bufferSize2);
                                     IntPtr numberOfBytesRead2 = IntPtr.Zero;
-                                    if (Helper.ReadProcessMemory(TargetProcess.Handle, new IntPtr(entry.Address.ToInt64() - bufferSize2), buffer2, nSize2, ref numberOfBytesRead2))
+                                    if (Helper.ReadProcessMemory(TargetProcessHandle, new IntPtr(entry.Address.ToInt64() - bufferSize2), buffer2, nSize2, ref numberOfBytesRead2))
                                     {
                                         if (numberOfBytesRead2.ToInt64() == bufferSize2)
                                         {
@@ -480,7 +482,7 @@ namespace RIPFinder
                         }
 
                         IntPtr numberOfBytesRead = IntPtr.Zero;
-                        if (Helper.ReadProcessMemory(TargetProcess.Handle, currentAddress, buffer, nSize, ref numberOfBytesRead))
+                        if (Helper.ReadProcessMemory(TargetProcessHandle, currentAddress, buffer, nSize, ref numberOfBytesRead))
                         {
                             binFs.Write(buffer, 0, numberOfBytesRead.ToInt32());
 
@@ -693,11 +695,13 @@ namespace RIPFinder
                 this.Button_SelectProcess.IsEnabled = true;
                 this.TextBox_ProcessName.Clear();
                 this.TargetProcess = null;
+                this.TargetProcessHandle = IntPtr.Zero;
                 this.BinFileName = null;
 
                 this.Button_SelectBinFile.IsEnabled = false;
                 this.TextBox_BinFileName.Clear();
                 this.TargetProcess = null;
+                this.TargetProcessHandle = IntPtr.Zero;
                 this.BinFileName = null;
             }
             else if (radioButton.Name == this.RadioButton_Group1_File.Name)
@@ -705,11 +709,13 @@ namespace RIPFinder
                 this.Button_SelectProcess.IsEnabled = false;
                 this.TextBox_ProcessName.Clear();
                 this.TargetProcess = null;
+                this.TargetProcessHandle = IntPtr.Zero;
                 this.BinFileName = null;
 
                 this.Button_SelectBinFile.IsEnabled = true;
                 this.TextBox_BinFileName.Clear();
                 this.TargetProcess = null;
+                this.TargetProcessHandle = IntPtr.Zero;
                 this.BinFileName = null;
             }
 
