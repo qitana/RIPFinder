@@ -587,7 +587,7 @@ namespace RIPFinder
                         var r0 = p[0].ToInt64() - baseAddress.ToInt64();
                         pString += "p: \"" + TargetProcess.MainModule.ModuleName + "\"+" +
                             ((r0.ToString("X").Length % 2 == 1) ? "0" + r0.ToString("X") : r0.ToString("X")) + " (" +
-                            ((p[1].ToInt64().ToString("X").Length % 2 == 1) ? "0" + p[1].ToInt64().ToString("X") : p[1].ToInt64().ToString("X")) + ")";
+                            ((p[0].ToInt64().ToString("X").Length % 2 == 1) ? "0" + p[0].ToInt64().ToString("X") : p[0].ToInt64().ToString("X")) + ")";
 
                         if (p[1].ToInt64() >= baseAddress.ToInt64() && p[1].ToInt64() <= endAddress.ToInt64())
                         {
