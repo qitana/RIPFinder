@@ -40,6 +40,35 @@ namespace RIPFinder
                     TextBox_ProcessName.Text = processSelection.SelectedProcess.ProcessName;
                     DataGrid_RIP.ItemsSource = null;
                     TextBox_Log.Clear();
+
+                    TextBox_Stack.Clear();
+                    List<ProcessModule> modules = new List<ProcessModule>();
+                    var mainModule = TargetProcess.MainModule;
+                    foreach (ProcessModule m in TargetProcess.Modules)
+                    {
+                        modules.Add(m);
+                    }
+
+                    modules.Sort((a, b) => {
+                        if (a.ModuleName == mainModule.ModuleName) return -1;
+                        if (b.ModuleName == mainModule.ModuleName) return 1;
+                        return (int)(a.BaseAddress.ToInt64() - b.BaseAddress.ToInt64()); 
+                    });
+
+                    foreach (ProcessModule m in modules)
+                    {
+                        int moduleMemorySize = m.ModuleMemorySize;
+                        IntPtr startAddres = m.BaseAddress;
+                        IntPtr endAddres = new IntPtr(m.BaseAddress.ToInt64() + moduleMemorySize);
+
+                        TextBox_Stack.AppendText($"Module Name: {m.ModuleName}" + "\r\n");
+                        TextBox_Stack.AppendText($"File Name: {m.FileName}" + "\r\n");
+                        TextBox_Stack.AppendText($"Module Size: {moduleMemorySize.ToString("#,0")} Byte" + "\r\n");
+                        TextBox_Stack.AppendText($"Start Address: {startAddres.ToInt64().ToString("X2")} ({startAddres.ToInt64()})" + "\r\n");
+                        TextBox_Stack.AppendText($"End Address  : {endAddres.ToInt64().ToString("X2")} ({endAddres.ToInt64()})" + "\r\n");
+                        TextBox_Stack.AppendText($"---------------------------------------------------------------" + "\r\n");
+                    }
+
                 }
             }
         }
@@ -364,7 +393,7 @@ namespace RIPFinder
             return filters;
         }
 
-        
+
         private void DataGrid_RIP_CopyBaseRelativeAddressString(object sender, RoutedEventArgs e)
         {
             RIPEntry entry = this.DataGrid_RIP.SelectedItem as RIPEntry;
@@ -565,7 +594,7 @@ namespace RIPFinder
                 var endAddress = new IntPtr(TargetProcess.MainModule.BaseAddress.ToInt64() + TargetProcess.MainModule.ModuleMemorySize);
 
                 Memory memory = new Memory(TargetProcess);
-                var pointers = memory.SigScan(TextBox_Signature.Text.Replace('*','?'), offset1, true);
+                var pointers = memory.SigScan(TextBox_Signature.Text.Replace('*', '?'), offset1, true);
 
 
                 TextBox_LogScan.Text += "FileName= " + TargetProcess.MainModule.FileName + Environment.NewLine;

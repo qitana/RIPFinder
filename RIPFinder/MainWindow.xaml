@@ -62,6 +62,11 @@
                     <TextBox x:Name="TextBox_LogScan" Margin="10,0,10,10" Grid.Row="1" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
                 </Grid>
             </TabItem>
+            <TabItem Header="Stack" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="54">
+                <Grid >
+                    <TextBox x:Name="TextBox_Stack" Margin="10" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontFamily="Consolas"/>
+                </Grid>
+            </TabItem>
         </TabControl>
         <RadioButton x:Name="RadioButton_Group1_Process" GroupName="group1" Content="Process" HorizontalAlignment="Left" Margin="10,15,0,0" VerticalAlignment="Top" Checked="RadioButton_Group1_Checked"/>
         <RadioButton x:Name="RadioButton_Group1_File" GroupName="group1" Content="File" HorizontalAlignment="Left" Margin="10,46,0,0" VerticalAlignment="Top" Checked="RadioButton_Group1_Checked" Width="59"/>
