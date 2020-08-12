@@ -234,7 +234,7 @@ namespace RIPFinder
 
             // Read this many bytes at a time. This needs to be a 32bit number as BitConverter pulls
             // from a 32bit offset into the array that we read from the process.
-            const Int32 kMaxReadSize = 65536;
+            const Int32 kMaxReadSize = 1 * 1024 * 1024;
 
             int module_memory_size = process.MainModule.ModuleMemorySize;
             IntPtr process_start_addr = process.MainModule.BaseAddress;
@@ -249,9 +249,10 @@ namespace RIPFinder
                 IntPtr read_size = (IntPtr)Math.Min(bytes_left, kMaxReadSize);
 
                 IntPtr num_bytes_read = IntPtr.Zero;
+                int max_search_offset = 0;
                 if (Helper.ReadProcessMemory(processHandle, read_start_addr, read_buffer, read_size, ref num_bytes_read))
                 {
-                    int max_search_offset = num_bytes_read.ToInt32() - pattern_array.Length - Math.Max(0, offset);
+                    max_search_offset = num_bytes_read.ToInt32() - pattern_array.Length - Math.Max(0, offset);
                     // With RIP we will read a 4byte pointer at the |offset|, else we read an 8byte pointer. Either
                     // way we can't find a pattern such that the pointer we want to read is off the end of the buffer.
                     if (rip_addressing)
@@ -298,8 +299,14 @@ namespace RIPFinder
                 }
 
                 // Move to the next contiguous buffer to read.
-                // TODO: If the pattern lies across 2 buffers, then it would not be found.
-                read_start_addr = IntPtr.Add(read_start_addr, kMaxReadSize);
+                if (IntPtr.Add(read_start_addr, num_bytes_read.ToInt32()).ToInt64() >= process_end_addr.ToInt64())
+                {
+                    read_start_addr = IntPtr.Add(read_start_addr, num_bytes_read.ToInt32());
+                }
+                else
+                {
+                    read_start_addr = IntPtr.Add(read_start_addr, max_search_offset);
+                }
             }
 
             return matches_list;

@@ -370,7 +370,7 @@ namespace RIPFinder
             List<string> filters = new List<string>();
             if (!string.IsNullOrWhiteSpace(TextBox_FilterString.Text))
             {
-                var filterStrings = TextBox_FilterString.Text.Split(',');
+                var filterStrings = TextBox_FilterString.Text.Replace("\r\n",",").Replace("\n", ",").Replace("\r", ",").Split(',');
                 foreach (var filterString in filterStrings)
                 {
                     var str = filterString.Trim();
@@ -614,7 +614,7 @@ namespace RIPFinder
                     foreach (var p in pointers)
                     {
                         var r0 = p[0].ToInt64() - baseAddress.ToInt64();
-                        pString += "p: \"" + TargetProcess.MainModule.ModuleName + "\"+" +
+                        pString += "ptr: \"" + TargetProcess.MainModule.ModuleName + "\"+" +
                             ((r0.ToString("X").Length % 2 == 1) ? "0" + r0.ToString("X") : r0.ToString("X")) + " (" +
                             ((p[0].ToInt64().ToString("X").Length % 2 == 1) ? "0" + p[0].ToInt64().ToString("X") : p[0].ToInt64().ToString("X")) + ")";
 
@@ -633,6 +633,8 @@ namespace RIPFinder
                 });
                 await task;
                 TextBox_LogScan.Text += pString;
+                TextBox_LogScan.Text += "==================" + Environment.NewLine;
+                TextBox_LogScan.Text += "Scan complete." + Environment.NewLine;
                 SetUIEnabled(true);
             }
             else if (this.RadioButton_Group1_File.IsChecked == true)

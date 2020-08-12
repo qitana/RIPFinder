@@ -23,7 +23,7 @@
                         <RowDefinition Height="126"/>
                     </Grid.RowDefinitions>
                     <Label Content="Target Filter:" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Height="26" Width="79" />
-                    <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="58" Margin="84,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="624"/>
+                    <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="58" Margin="84,10,0,0" AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="624"/>
                     <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" Margin="557,78,188,0" VerticalAlignment="Top" Height="15"/>
                     <Button x:Name="Button_ExportResults" Content="Export Results" Margin="0,73,10,0" HorizontalAlignment="Right" Width="125" Height="23" VerticalAlignment="Top" Click="Button_ExportResults_Click"/>
                     <Button x:Name="Button_StartScan" Content="Start Scan" HorizontalAlignment="Left" Margin="84,73,0,0" VerticalAlignment="Top" Width="98" Height="23" Click="Button_StartScan_Click"/>
@@ -46,6 +46,7 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBox x:Name="TextBox_Log" Margin="10,0,10,10" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="2"/>
+                    <Label Content="Caution: Hex value must be UPPER CASE" HorizontalAlignment="Left" Margin="208,70,0,0" VerticalAlignment="Top"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Signature Scan">
