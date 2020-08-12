@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RIPFinder"
         mc:Ignorable="d"
-        Title="RIPFinder" Height="500" Width="930">
+        Title="RIPFinder" Height="550" Width="930">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="78"/>
@@ -18,13 +18,13 @@
             <TabItem Header="Signature Search">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="105"/>
+                        <RowDefinition Height="107"/>
                         <RowDefinition/>
                         <RowDefinition Height="126"/>
                     </Grid.RowDefinitions>
                     <Label Content="Target Filter:" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Height="26" Width="79" />
-                    <TextBox x:Name="TextBox_FilterString" HorizontalAlignment="Left" Height="58" Margin="84,10,0,0" AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Top" Width="624"/>
-                    <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" Margin="557,78,188,0" VerticalAlignment="Top" Height="15"/>
+                    <TextBox x:Name="TextBox_FilterString" Height="58" Margin="84,10,10,0" AcceptsReturn="True" TextWrapping="Wrap" VerticalAlignment="Top"/>
+                    <CheckBox x:Name="CheckBox_AllModules" Content="Search From All Modules" Margin="199,78,0,0" VerticalAlignment="Top" Height="15" HorizontalAlignment="Left" Width="151"/>
                     <Button x:Name="Button_ExportResults" Content="Export Results" Margin="0,73,10,0" HorizontalAlignment="Right" Width="125" Height="23" VerticalAlignment="Top" Click="Button_ExportResults_Click"/>
                     <Button x:Name="Button_StartScan" Content="Start Scan" HorizontalAlignment="Left" Margin="84,73,0,0" VerticalAlignment="Top" Width="98" Height="23" Click="Button_StartScan_Click"/>
                     <DataGrid x:Name="DataGrid_RIP" Margin="10,0,10,10" AutoGenerateColumns="False" CanUserAddRows="False" FontFamily="Consolas" Grid.Row="1">
@@ -46,18 +46,18 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBox x:Name="TextBox_Log" Margin="10,0,10,10" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="2"/>
-                    <Label Content="Caution: Hex value must be UPPER CASE" HorizontalAlignment="Left" Margin="208,70,0,0" VerticalAlignment="Top"/>
+                    <Label Content="Caution: Hex value must be UPPER CASE" HorizontalAlignment="Left" Margin="367,73,0,0" VerticalAlignment="Top" Height="26" Width="224"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Signature Scan">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="41*"/>
-                        <RowDefinition Height="153*"/>
+                        <RowDefinition Height="85"/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Label Content="Signature:" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" Width="70"/>
                     <TextBox x:Name="TextBox_Signature" Height="23" Margin="75,14,122,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-                    <Button x:Name="Button_SignatureScan" Content="Scan" Margin="806,14,10,0" VerticalAlignment="Top" Height="23" Click="Button_SignatureScan_Click"/>
+                    <Button x:Name="Button_SignatureScan" Content="Scan" Margin="0,14,10,0" VerticalAlignment="Top" Height="23" Click="Button_SignatureScan_Click" HorizontalAlignment="Right" Width="80"/>
                     <Label Content="Offset:" HorizontalAlignment="Left" Margin="5,42,0,0" VerticalAlignment="Top" Width="60"/>
                     <TextBox x:Name="TextBox_Offset1" HorizontalAlignment="Left" Height="23" Margin="75,46,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="60"/>
                     <TextBox x:Name="TextBox_LogScan" Margin="10,0,10,10" Grid.Row="1" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
