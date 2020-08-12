@@ -46,7 +46,8 @@
                         </DataGrid.Columns>
                     </DataGrid>
                     <TextBox x:Name="TextBox_Log" Margin="10,0,10,10" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="2"/>
-                    <Label Content="Caution: Hex value must be UPPER CASE" HorizontalAlignment="Left" Margin="367,73,0,0" VerticalAlignment="Top" Height="26" Width="224"/>
+                    <Label Content="Caution: Hex value must be UPPER CASE" HorizontalAlignment="Left" Margin="505,72,0,0" VerticalAlignment="Top" Height="26" Width="224"/>
+                    <CheckBox x:Name="CheckBox_OnlyLEA" Content="Only Ends in LEA" Margin="369,78,0,0" VerticalAlignment="Top" Height="14" HorizontalAlignment="Left" Width="151"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Signature Scan">

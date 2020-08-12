@@ -106,6 +106,7 @@ namespace RIPFinder
                 }
 
                 bool searchFromAllModules = CheckBox_AllModules.IsChecked ?? false;
+                bool onlyLEA = CheckBox_OnlyLEA.IsChecked ?? false;
 
                 List<ProcessModule> ProcessModules = new List<ProcessModule>();
 
@@ -202,6 +203,10 @@ namespace RIPFinder
                                     {
                                         if (numberOfBytesRead2.ToInt64() == bufferSize2)
                                         {
+                                            if (onlyLEA && (buffer2.Length < 2 || buffer2[buffer2.Length - 2] != 0x8D))
+                                            {
+                                                continue;
+                                            }
                                             entry.Signature = BitConverter.ToString(buffer2).Replace("-", "");
                                         }
                                     }
